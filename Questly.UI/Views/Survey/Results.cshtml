@@ -1,0 +1,39 @@
+﻿@model SurveyResultsViewModel
+
+<div class="container w-50 mx-auto">
+    <h2>@Model.SurveyTitle</h2>
+
+    @foreach (var question in Model.Questions)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>@question.QuestionText</strong>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Votes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var option in question.Options)
+                        {
+                            <tr>
+                                <td>@option.OptionText</td>
+                                <td>@option.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <a href="@Url.Action("Index", "Survey")" class="btn btn-outline-info w-100">
+        Back to My Surveys
+    </a>
+</div>
+

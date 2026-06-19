@@ -1,0 +1,28 @@
+﻿@model LoginViewModel
+
+<style>
+    input:-internal-autofill-selected + label::after {
+        background-color: transparent !important;
+    }
+</style>
+
+<form asp-action="Login" method="post" style="width: 350px; background-color: #f0f2f4;" class="d-grid gap-2 rounded-2 p-3 shadow-sm">
+    <div class="brand mb-3" style="text-align: center;">
+        @* <img src="~/android-chrome-512x512.png" alt="brand-logo" style="width: 40px;" /> *@
+        <h1 class="m-0 fs-3 text-primary" style="text-shadow: 1px 2px var(--bs-gray-400);">Survey Platform</h1>
+    </div>
+    <div class="form-floating shadow-sm rounded-2">
+        <input asp-for="Username" type="text" class="form-control" id="userName" placeholder=""
+               style="font-family: helvetica !important;" />
+        @* <label asp-for="Username" for="userName" style="left: auto; right: 0;">Username</label> *@
+        <label asp-for="Username" for="userName">Username</label>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-2 shadow-sm rounded-2">
+        <input asp-for="Password" class="form-control" type="password" id="password" placeholder="" />
+        @* <label asp-for="Password" for="password" style="left: auto; right: 0;">Password</label> *@
+        <label asp-for="Password" for="password">Password</label>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success shadow-sm fw-semibold">Log In</button>
+</form>

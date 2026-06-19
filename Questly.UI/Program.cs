@@ -1,9 +1,30 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Questly.Data.Context;
+using Questly.Data.Entities;
+using Questly.Services.Implementations;
+using Questly.Services.Interfaces;
+using Questly.UI;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<QuestlyDbContext>(c => c.UseSqlServer("Server=.;Database=QuestlyDb;Trusted_Connection=True;TrustServerCertificate=True;"));
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.User.RequireUniqueEmail = false;
+    options.User.AllowedUserNameCharacters = "0123456789";
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<QuestlyDbContext>();
+builder.Services.AddScoped<ISurveyService, SurveyService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 var app = builder.Build();
+
+// Seed database
+await app.Services.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -22,7 +43,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 

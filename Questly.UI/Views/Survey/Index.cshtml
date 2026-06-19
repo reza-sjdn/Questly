@@ -1,0 +1,33 @@
+﻿@model List<Survey>
+
+<h1 class="mb-4">My Surveys</h1>
+<div class="d-flex justify-content-end">
+    <a asp-action="Create" class="mb-2 btn btn-primary">Create Survey</a>
+</div>
+<table class="table table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>ID</th>
+            <th>Created At</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var survey in Model)
+    {
+        <tr>
+            <td>@survey.Title</td>
+            <td>@survey.Id</td>
+            <td>@survey.CreatedAt</td>
+            <td class="d-flex align-items-center gap-2">
+                <a href="@Url.Action("Edit", new { id = survey.Id })" class="btn btn-sm btn-warning">Edit</a>
+                <a href="@Url.Action("Delete", new { id = survey.Id })" class="btn btn-sm btn-danger">Delete</a>
+                <a href="@Url.Action("Details", new { id = survey.Id })" class="btn btn-sm btn-success">Details</a>
+                <a href="@Url.Action("Take", new { id = survey.Id })" class="btn btn-sm btn-primary">Take</a>
+                <a href="@Url.Action("Results", new { id = survey.Id })" class="btn btn-sm btn-info">Result</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

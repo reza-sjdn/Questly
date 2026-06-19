@@ -1,0 +1,22 @@
+﻿@model Survey
+
+<div class="container w-50 mx-auto">
+    <h1 class="mb-4">Create a New Survey</h1>
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Title</label>
+            <input asp-for="Title" type="text" class="form-control" placeholder="For Example: Employees Feedback">
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-50">Create</button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-danger w-50">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+

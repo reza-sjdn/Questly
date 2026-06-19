@@ -1,0 +1,63 @@
+﻿@model CreateQuestionViewModel
+
+<div class="container w-50 mx-auto">
+    <h2>Add Question</h2>
+
+    <form asp-action="Create" method="post">
+
+        <input asp-for="SurveyId" type="hidden" />
+
+        <div class="mb-3">
+            <label asp-for="Text" class="form-label"></label>
+            <input asp-for="Text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label"></label>
+            <select asp-for="Type"
+                    asp-items="Html.GetEnumSelectList<QuestionType>()"
+                    class="form-select">
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="IsRequired" class="form-check-input" />
+            <label asp-for="IsRequired" class="form-check-label"></label>
+        </div>
+
+        <hr />
+
+        <h4>Options</h4>
+
+        <div id="optionsContainer">
+            <input name="Options" class="form-control mb-2" />
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success w-50">
+                Save Question
+            </button>
+
+            <button type="button"
+                    id="addOption"
+                    class="btn btn-outline-primary w-50">
+                Add Option
+            </button>
+        </div>
+
+    </form>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $("#addOption").click(function () {
+
+            $("#optionsContainer").append(
+                '<input name="Options" class="form-control mb-2" />'
+            );
+
+        });
+    </script>
+}
