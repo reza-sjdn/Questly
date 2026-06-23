@@ -119,12 +119,6 @@ namespace Questly.UI.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //[HttpGet]
-        //public IActionResult Thanks()
-        //{
-        //    return View();
-        //}
-
         [HttpGet]
         public async Task<IActionResult> Results(int id)
         {

@@ -25,18 +25,9 @@ namespace Questly.Services.Implementations
         public async Task<Survey?> GetSurveyDetailedByIdAsync(int id)
         {
             var survey = await _context.Surveys.AsNoTracking()
-                .Include(s => s.Questions)
-                .ThenInclude(q => q.Options)
+                .Include(s => s.Questions.OrderBy(q => q.DisplayOrder))
+                    .ThenInclude(q => q.Options.OrderBy(o => o.DisplayOrder))
                 .FirstOrDefaultAsync(s => s.Id == id);
-
-            survey.Questions = survey.Questions
-                .OrderBy(q => q.DisplayOrder)
-                .Select(q =>
-                {
-                    q.Options = q.Options.OrderBy(o => o.DisplayOrder).ToList();
-                    return q;
-                })
-                .ToList();
 
             return survey;
         }
@@ -64,7 +55,7 @@ namespace Questly.Services.Implementations
         {
             var survey = await _context.Surveys
                 .Include(s => s.Questions.OrderBy(q => q.DisplayOrder))
-                .ThenInclude(q => q.Options.OrderBy(o => o.DisplayOrder))
+                    .ThenInclude(q => q.Options.OrderBy(o => o.DisplayOrder))
                 .FirstOrDefaultAsync(s => s.Id == surveyId);
 
             if (survey == null)
@@ -77,7 +68,6 @@ namespace Questly.Services.Implementations
                 Title = survey.Title,
                 Description = survey.Description,
                 Questions = survey.Questions
-                    .OrderBy(q => q.DisplayOrder)
                     .Select(q => new TakeSurveyQuestionDto
                     {
                         QuestionId = q.Id,
@@ -85,7 +75,6 @@ namespace Questly.Services.Implementations
                         Type = q.Type,
                         IsRequired = q.IsRequired,
                         Options = q.Options
-                            .OrderBy(o => o.DisplayOrder)
                             .Select(o => new TakeSurveyOptionDto
                             {
                                 OptionId = o.Id,
@@ -142,8 +131,8 @@ namespace Questly.Services.Implementations
         public async Task<SurveyResultsDto?> GetSurveyResultsAsync(int surveyId)
         {
             var survey = await _context.Surveys.AsNoTracking()
-                .Include(s => s.Questions)
-                    .ThenInclude(q => q.Options)
+                .Include(s => s.Questions.OrderBy(q => q.DisplayOrder))
+                    .ThenInclude(q => q.Options.OrderBy(o => o.DisplayOrder))
                 .FirstOrDefaultAsync(s => s.Id == surveyId);
 
             if (survey == null)
@@ -166,7 +155,7 @@ namespace Questly.Services.Implementations
                     QuestionText = question.Text
                 };
 
-                foreach (var option in question.Options.OrderBy(o => o.DisplayOrder))
+                foreach (var option in question.Options)
                 {
                     var count = await _context.ResponseAnswerOptions
                         .CountAsync(rao => rao.QuestionOptionId == option.Id);
