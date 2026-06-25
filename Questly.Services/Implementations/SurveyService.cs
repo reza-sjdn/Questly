@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Questly.Data.Context;
 using Questly.Domain.Entities;
 using Questly.Domain.Enums;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace Questly.Services.Implementations
 {
-    public class SurveyService(QuestlyDbContext _context) : ISurveyService
+    public class SurveyService(QuestlyDbContext _context, IMapper _mapper) : ISurveyService
     {
         public async Task<int> CreateSurveyAsync(Survey survey)
         {
@@ -61,30 +62,7 @@ namespace Questly.Services.Implementations
             if (survey == null)
                 return null;
 
-            // Map Survey -> TakeSurveyDto
-            var dto = new TakeSurveyDto
-            {
-                SurveyId = survey.Id,
-                Title = survey.Title,
-                Description = survey.Description,
-                Questions = survey.Questions
-                    .Select(q => new TakeSurveyQuestionDto
-                    {
-                        QuestionId = q.Id,
-                        Text = q.Text,
-                        Type = q.Type,
-                        IsRequired = q.IsRequired,
-                        Options = q.Options
-                            .Select(o => new TakeSurveyOptionDto
-                            {
-                                OptionId = o.Id,
-                                Text = o.Text
-                            })
-                            .ToList()
-                    })
-                    .ToList()
-            };
-
+            var dto = _mapper.Map<TakeSurveyDto>(survey);
             return dto;
         }
 

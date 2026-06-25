@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Questly.Data.Entities;
@@ -9,7 +10,9 @@ using Questly.UI.Models.Survey;
 
 namespace Questly.UI.Controllers
 {
-    public class SurveyController(ISurveyService _surveyService, UserManager<ApplicationUser> _userManager) : Controller
+    public class SurveyController(ISurveyService _surveyService,
+                                  UserManager<ApplicationUser> _userManager,
+                                  IMapper _mapper) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -67,30 +70,9 @@ namespace Questly.UI.Controllers
         public async Task<IActionResult> Take(int id)
         {
             var dto = await _surveyService.GetTakeSurveyDtoAsync(id);
-
             if (dto == null)
                 return NotFound();
-
-            //DTO → ViewModel(Controller)
-            var model = new TakeSurveyViewModel
-            {
-                SurveyId = dto.SurveyId,
-                Title = dto.Title,
-                Description = dto.Description,
-                Questions = dto.Questions.Select(q => new TakeSurveyQuestionViewModel
-                {
-                    QuestionId = q.QuestionId,
-                    Text = q.Text,
-                    Type = q.Type,
-                    IsRequired = q.IsRequired,
-                    Options = q.Options.Select(o => new TakeSurveyOptionViewModel
-                    {
-                        OptionId = o.OptionId,
-                        Text = o.Text
-                    }).ToList()
-                }).ToList()
-            };
-
+            var model = _mapper.Map<TakeSurveyViewModel>(dto);
             return View(model);
         }
 
@@ -100,22 +82,8 @@ namespace Questly.UI.Controllers
         {
             if (!ModelState.IsValid)
                 return View("Take", model);
-
-            //ViewModel → DTO (POST)
-            var dto = new TakeSurveyDto
-            {
-                SurveyId = model.SurveyId,
-                Questions = model.Questions.Select(q => new TakeSurveyQuestionDto
-                {
-                    QuestionId = q.QuestionId,
-                    AnswerText = q.AnswerText,
-                    SelectedOptionId = q.SelectedOptionId,
-                    SelectedOptionIds = q.SelectedOptionIds
-                }).ToList()
-            };
-
+            var dto = _mapper.Map<TakeSurveyDto>(model);
             await _surveyService.SubmitSurveyAsync(dto);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -123,29 +91,11 @@ namespace Questly.UI.Controllers
         public async Task<IActionResult> Results(int id)
         {
             var dto = await _surveyService.GetSurveyResultsAsync(id);
-
             if (dto == null)
                 return NotFound();
-
-            //DTO → ViewModel(Controller)
-            var model = new SurveyResultsViewModel
-            {
-                SurveyId = dto.SurveyId,
-                SurveyTitle = dto.SurveyTitle,
-                Questions = dto.Questions.Select(q => new QuestionResultViewModel
-                {
-                    QuestionId = q.QuestionId,
-                    QuestionText = q.QuestionText,
-                    Options = q.Options.Select(o => new OptionResultViewModel
-                    {
-                        OptionId = o.OptionId,
-                        OptionText = o.OptionText,
-                        Count = o.Count
-                    }).ToList()
-                }).ToList()
-            };
-
+            var model = _mapper.Map<SurveyResultsViewModel>(dto);
             return View(model);
         }
+
     }
 }

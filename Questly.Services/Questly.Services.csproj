@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Questly.Data\Questly.Data.csproj" />
     <ProjectReference Include="..\Questly.Domain\Questly.Domain.csproj" />
   </ItemGroup>
