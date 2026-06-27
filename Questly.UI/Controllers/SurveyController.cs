@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Questly.Data.Entities;
 using Questly.Domain.Entities;
-using Questly.Services.DTOs;
+using Questly.Services.DTOs.Survey;
 using Questly.Services.Interfaces;
 using Questly.UI.Models.Survey;
+using System.Security.Claims;
 
 namespace Questly.UI.Controllers
 {
@@ -17,41 +18,45 @@ namespace Questly.UI.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            var model = await _surveyService.GetUserSurveysAsync(userId);
-            return View(model);
+            var surveyDto = await _surveyService.GetUserSurveysAsync(userId);
+            var surveyModel = _mapper.Map<List<GetSurveyViewModel>>(surveyDto);
+            return View(surveyModel);
         }
 
         public IActionResult Create() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Create(Survey survey)
+        public async Task<IActionResult> Create(CreateSurveyViewModel surveyModel)
         {
             if (ModelState.IsValid)
             {
-                survey.UserId = _userManager.GetUserId(User);
-                int surveyId = await _surveyService.CreateSurveyAsync(survey);
+                var surveyDto = _mapper.Map<CreateSurveyDto>(surveyModel);
+                surveyDto.UserId = _userManager.GetUserId(User);
+                int surveyId = await _surveyService.CreateSurveyAsync(surveyDto);
                 return RedirectToAction(nameof(Details), new { id = surveyId });
             }
 
-            return View(survey);
+            return View(surveyModel);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var survey = await _surveyService.GetSurveyByIdAsync(id);
-            return View(survey);
+            var surveyDto = await _surveyService.GetSurveyByIdAsync(id);
+            var surveyModel = _mapper.Map<GetSurveyViewModel>(surveyDto);
+            return View(surveyModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Survey survey)
+        public async Task<IActionResult> Edit(UpdateSurveyViewModel surveyModel)
         {
             if (ModelState.IsValid)
             {
-                await _surveyService.UpdateSurveyAsync(survey);
+                var surveyDto = _mapper.Map<UpdateSurveyDto>(surveyModel);
+                await _surveyService.UpdateSurveyAsync(surveyDto);
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(survey);
+            return View(surveyModel);
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -62,39 +67,40 @@ namespace Questly.UI.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var survey = await _surveyService.GetSurveyDetailedByIdAsync(id);
-            return View(survey);
+            var surveyDto = await _surveyService.GetSurveyDetailedByIdAsync(id);
+            var surveyModel = _mapper.Map<GetSurveyViewModel>(surveyDto);
+            return View(surveyModel);
         }
 
         [HttpGet]
         public async Task<IActionResult> Take(int id)
         {
-            var dto = await _surveyService.GetTakeSurveyDtoAsync(id);
-            if (dto == null)
+            var surveyDto = await _surveyService.GetTakeSurveyDtoAsync(id);
+            if (surveyDto == null)
                 return NotFound();
-            var model = _mapper.Map<TakeSurveyViewModel>(dto);
-            return View(model);
+            var surveyModel = _mapper.Map<TakeSurveyViewModel>(surveyDto);
+            return View(surveyModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Submit(TakeSurveyViewModel model)
+        public async Task<IActionResult> Submit(TakeSurveyViewModel takeSurveyModel)
         {
             if (!ModelState.IsValid)
-                return View("Take", model);
-            var dto = _mapper.Map<TakeSurveyDto>(model);
-            await _surveyService.SubmitSurveyAsync(dto);
+                return View("Take", takeSurveyModel);
+            var takeSurveyDto = _mapper.Map<TakeSurveyDto>(takeSurveyModel);
+            await _surveyService.SubmitSurveyAsync(takeSurveyDto);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public async Task<IActionResult> Results(int id)
         {
-            var dto = await _surveyService.GetSurveyResultsAsync(id);
-            if (dto == null)
+            var surveyResultsDto = await _surveyService.GetSurveyResultsAsync(id);
+            if (surveyResultsDto == null)
                 return NotFound();
-            var model = _mapper.Map<SurveyResultsViewModel>(dto);
-            return View(model);
+            var surveyResultsModel = _mapper.Map<SurveyResultsViewModel>(surveyResultsDto);
+            return View(surveyResultsModel);
         }
 
     }

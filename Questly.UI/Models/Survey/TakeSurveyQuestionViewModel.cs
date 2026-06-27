@@ -4,7 +4,7 @@ namespace Questly.UI.Models.Survey
 {
     public class TakeSurveyQuestionViewModel
     {
-        public int QuestionId { get; set; }
+        public int Id { get; set; }
 
         public string Text { get; set; } = string.Empty;
 

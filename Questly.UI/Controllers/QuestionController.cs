@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Questly.Domain.Entities;
+using Questly.Services.DTOs.Question;
+using Questly.Services.Implementations;
 using Questly.Services.Interfaces;
 using Questly.UI.Models.Question;
+using Questly.UI.Models.Survey;
 
 namespace Questly.UI.Controllers
 {
-    public class QuestionController(IQuestionService _questionService) : Controller
+    public class QuestionController(IQuestionService _questionService, IMapper _mapper) : Controller
     {
         [HttpGet]
         public async Task<IActionResult> Create(int surveyId)
@@ -18,32 +22,40 @@ namespace Questly.UI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateQuestionViewModel model)
+        public async Task<IActionResult> Create(CreateQuestionViewModel surveyModel)
         {
             if (!ModelState.IsValid)
-                return View(model);
-
-            var question = new Question
-            {
-                SurveyId = model.SurveyId,
-                Text = model.Text,
-                Type = model.Type,
-                IsRequired = model.IsRequired
-            };
-
-            question.Options = model.Options
-           .Where(o => !string.IsNullOrWhiteSpace(o))
-           .Select((o, index) => new QuestionOption
-           {
-               Text = o,
-               DisplayOrder = index + 1
-           })
-           .ToList();
-
-            await _questionService.CreateQuestionAsync(question);
-
+                return View(surveyModel);
+            var surveyDto = _mapper.Map<CreateQuestionDto>(surveyModel);
+            await _questionService.CreateQuestionAsync(surveyDto);
             return RedirectToAction("Details", "Survey",
-                new { id = model.SurveyId });
+                new { id = surveyModel.SurveyId });
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var surveyDto = await _questionService.GetQuestionByIdAsync(id);
+            var question = _mapper.Map<GetQuestionViewModel>(surveyDto);
+            return View(question);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateQuestionViewModel surveyModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var questionDto = _mapper.Map<UpdateQuestionDto>(surveyModel);
+                await _questionService.UpdateQuestionAsync(questionDto);
+                return RedirectToAction("Details", "Survey", new { id = questionDto.SurveyId });
+            }
+
+            return View(nameof(Edit), new { surveyModel.Id });
+        }
+
+        public async Task<IActionResult> Delete(int id, int surveyId)
+        {
+            await _questionService.DeleteQuestionAsync(id);
+            return RedirectToAction("Details", "Survey", new { id = surveyId });
         }
 
         [HttpPost]

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Questly.Data.Context;
 using Questly.Domain.Entities;
 using Questly.Domain.Enums;
-using Questly.Services.DTOs;
+using Questly.Services.DTOs.Survey;
 using Questly.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,31 +13,42 @@ namespace Questly.Services.Implementations
 {
     public class SurveyService(QuestlyDbContext _context, IMapper _mapper) : ISurveyService
     {
-        public async Task<int> CreateSurveyAsync(Survey survey)
+        public async Task<int> CreateSurveyAsync(CreateSurveyDto surveyDto)
         {
+            var survey = _mapper.Map<Survey>(surveyDto);
             await _context.Surveys.AddAsync(survey);
             await _context.SaveChangesAsync();
             return survey.Id;
         }
 
-        public async Task<Survey?> GetSurveyByIdAsync(int id) =>
-            await _context.Surveys.FindAsync(id);
+        public async Task<GetSurveyDto?> GetSurveyByIdAsync(int id)
+        {
+            var survey = await _context.Surveys.FindAsync(id);
+            var surveyDto = _mapper.Map<GetSurveyDto?>(survey);
+            return surveyDto;
+        }
 
-        public async Task<Survey?> GetSurveyDetailedByIdAsync(int id)
+        public async Task<GetSurveyDto?> GetSurveyDetailedByIdAsync(int id)
         {
             var survey = await _context.Surveys.AsNoTracking()
                 .Include(s => s.Questions.OrderBy(q => q.DisplayOrder))
                     .ThenInclude(q => q.Options.OrderBy(o => o.DisplayOrder))
                 .FirstOrDefaultAsync(s => s.Id == id);
-
-            return survey;
+            var surveyDto = _mapper.Map<GetSurveyDto>(survey);
+            return surveyDto;
         }
 
-        public async Task<List<Survey>> GetUserSurveysAsync(string userId) =>
-            await _context.Surveys.Where(s => s.UserId == userId).ToListAsync();
-
-        public async Task<bool> UpdateSurveyAsync(Survey survey)
+        public async Task<List<GetSurveyDto>> GetUserSurveysAsync(string userId)
         {
+            var surveys = await _context.Surveys.Where(s => s.UserId == userId).ToListAsync();
+            var surveysDto = _mapper.Map<List<GetSurveyDto>>(surveys);
+            return surveysDto;
+        }
+
+
+        public async Task<bool> UpdateSurveyAsync(UpdateSurveyDto surveyDto)
+        {
+            var survey = _mapper.Map<Survey>(surveyDto);
             _context.Surveys.Update(survey);
             await _context.SaveChangesAsync();
             return true;
@@ -62,23 +73,23 @@ namespace Questly.Services.Implementations
             if (survey == null)
                 return null;
 
-            var dto = _mapper.Map<TakeSurveyDto>(survey);
-            return dto;
+            var surveyDto = _mapper.Map<TakeSurveyDto>(survey);
+            return surveyDto;
         }
 
-        public async Task SubmitSurveyAsync(TakeSurveyDto dto)
+        public async Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto)
         {
             var response = new SurveyResponse
             {
-                SurveyId = dto.SurveyId,
+                SurveyId = takeSurveyDto.Id,
                 SubmittedAt = DateTime.Now
             };
 
-            foreach (var question in dto.Questions)
+            foreach (var question in takeSurveyDto.Questions)
             {
                 var answer = new ResponseAnswer
                 {
-                    QuestionId = question.QuestionId,
+                    QuestionId = question.Id,
                     AnswerText = question.AnswerText
                 };
 
@@ -116,7 +127,7 @@ namespace Questly.Services.Implementations
             if (survey == null)
                 return null;
 
-            var dto = new SurveyResultsDto
+            var surveyResultDto = new SurveyResultsDto
             {
                 SurveyId = survey.Id,
                 SurveyTitle = survey.Title
@@ -146,10 +157,11 @@ namespace Questly.Services.Implementations
                     });
                 }
 
-                dto.Questions.Add(questionDto);
+                surveyResultDto.Questions.Add(questionDto);
             }
 
-            return dto;
+            return surveyResultDto;
         }
+
     }
 }

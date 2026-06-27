@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Questly.Services.DTOs
+namespace Questly.Services.DTOs.Survey
 {
     public class OptionResultDto
     {

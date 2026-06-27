@@ -1,4 +1,6 @@
 ﻿using Questly.Domain.Entities;
+using Questly.Services.DTOs.Question;
+using Questly.Services.DTOs.Survey;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,13 +9,11 @@ namespace Questly.Services.Interfaces
 {
     public interface IQuestionService
     {
-        Task<int> CreateQuestionAsync(Question question);
+        Task<int> CreateQuestionAsync(CreateQuestionDto questionDto);
 
-        Task<Question?> GetQuestionByIdAsync(int id);
+        Task<GetQuestionDto?> GetQuestionByIdAsync(int id);
 
-        Task<List<Question>> GetSurveyQuestionsAsync(int surveyId);
-
-        Task<bool> UpdateQuestionAsync(Question question);
+        Task<bool> UpdateQuestionAsync(UpdateQuestionDto questionDto);
 
         Task<bool> DeleteQuestionAsync(int id);
 

@@ -1,5 +1,5 @@
 ﻿using Questly.Domain.Entities;
-using Questly.Services.DTOs;
+using Questly.Services.DTOs.Survey;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,22 +8,23 @@ namespace Questly.Services.Interfaces
 {
     public interface ISurveyService
     {
-        Task<int> CreateSurveyAsync(Survey survey);
+        Task<int> CreateSurveyAsync(CreateSurveyDto surveyDto);
 
-        Task<Survey?> GetSurveyByIdAsync(int id);
+        Task<GetSurveyDto?> GetSurveyByIdAsync(int id);
 
-        Task<Survey?> GetSurveyDetailedByIdAsync(int id);
+        Task<GetSurveyDto?> GetSurveyDetailedByIdAsync(int id);
 
-        Task<List<Survey>> GetUserSurveysAsync(string userId);
+        Task<List<GetSurveyDto>> GetUserSurveysAsync(string userId);
 
-        Task<bool> UpdateSurveyAsync(Survey survey);
+        Task<bool> UpdateSurveyAsync(UpdateSurveyDto surveyDto);
 
         Task<bool> DeleteSurveyAsync(int id);
 
         Task<TakeSurveyDto?> GetTakeSurveyDtoAsync(int surveyId);
 
-        Task SubmitSurveyAsync(TakeSurveyDto model);
+        Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto);
 
         Task<SurveyResultsDto?> GetSurveyResultsAsync(int surveyId);
+
     }
 }
