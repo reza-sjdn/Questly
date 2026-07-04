@@ -25,6 +25,11 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<MappingProfile>();
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+});
+
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 

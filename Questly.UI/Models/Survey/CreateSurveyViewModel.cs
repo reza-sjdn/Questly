@@ -11,5 +11,7 @@ namespace Questly.UI.Models.Survey
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public string UserId { get; set; } = string.Empty;
+
+        public bool AllowAnonymousResponses { get; set; } = true;
     }
 }

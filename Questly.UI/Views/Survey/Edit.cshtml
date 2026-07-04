@@ -15,7 +15,19 @@
             <label asp-for="Description" class="form-label">Description</label>
             <textarea asp-for="Description" class="form-control" rows="3">@Model.Description</textarea>
         </div>
+        <div class="form-check mb-3">
+            <input asp-for="AllowAnonymousResponses"
+                   class="form-check-input" />
+
+            <label asp-for="AllowAnonymousResponses"
+                   class="form-check-label">
+                Allow anonymous responses
+            </label>
+        </div>
         <input type="text" asp-for="CreatedAt" hidden />
+        <input type="text" asp-for="IsPublished" hidden />
+        <input type="text" asp-for="PublishedAt" hidden />
+        <input type="text" asp-for="ClosedAt" hidden />
         <input type="text" asp-for="UserId" hidden />
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary w-50">Edit</button>

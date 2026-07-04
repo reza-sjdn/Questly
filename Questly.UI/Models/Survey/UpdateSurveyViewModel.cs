@@ -9,6 +9,12 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public bool IsPublished { get; set; }
+
+        public DateTime? PublishedAt { get; set; }
+
         public string UserId { get; set; } = string.Empty;
+
+        public bool AllowAnonymousResponses { get; set; } = true;
     }
 }

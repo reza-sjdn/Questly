@@ -22,6 +22,8 @@ namespace Questly.Services.DTOs.Survey
 
         public string UserId { get; set; } = string.Empty;
 
+        public bool AllowAnonymousResponses { get; set; } = true;
+
         public ICollection<UpdateSurveyQuestionDto> Questions { get; set; } = new List<UpdateSurveyQuestionDto>();
     }
 }

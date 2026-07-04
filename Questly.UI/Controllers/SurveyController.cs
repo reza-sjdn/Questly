@@ -77,10 +77,19 @@ namespace Questly.UI.Controllers
         public async Task<IActionResult> Take(int id)
         {
             var surveyDto = await _surveyService.GetTakeSurveyDtoAsync(id);
+
             if (surveyDto == null)
                 return NotFound();
+
             if (!surveyDto.IsAvailable)
                 return View("SurveyUnavailable");
+
+            if (!surveyDto.AllowAnonymousResponses &&
+                !User.Identity!.IsAuthenticated)
+            {
+                return Challenge();
+            }
+
             var surveyModel = _mapper.Map<TakeSurveyViewModel>(surveyDto);
             return View(surveyModel);
         }
@@ -91,8 +100,14 @@ namespace Questly.UI.Controllers
         {
             if (!ModelState.IsValid)
                 return View("Take", takeSurveyModel);
+
             var takeSurveyDto = _mapper.Map<TakeSurveyDto>(takeSurveyModel);
-            await _surveyService.SubmitSurveyAsync(takeSurveyDto);
+
+            string? userId = User.Identity!.IsAuthenticated
+                ? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                : null;
+
+            await _surveyService.SubmitSurveyAsync(takeSurveyDto, userId);
             return RedirectToAction(nameof(Dashboard));
         }
 

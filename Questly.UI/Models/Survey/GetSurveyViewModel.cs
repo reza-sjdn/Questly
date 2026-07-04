@@ -22,6 +22,8 @@ namespace Questly.UI.Models.Survey
 
         public string UserId { get; set; } = string.Empty;
 
+        public bool AllowAnonymousResponses { get; set; } = true;
+
         public List<GetQuestionViewModel> Questions { get; set; } = new List<GetQuestionViewModel>();
     }
 }

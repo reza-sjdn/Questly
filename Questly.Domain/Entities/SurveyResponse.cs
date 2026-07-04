@@ -11,6 +11,8 @@ namespace Questly.Domain.Entities
 
         public DateTime SubmittedAt { get; set; }
 
+        public string? UserId { get; set; }
+
         public Survey Survey { get; set; } = null!;
 
         public ICollection<ResponseAnswer> ResponseAnswers { get; set; } = new List<ResponseAnswer>();

@@ -122,12 +122,13 @@ namespace Questly.Services.Implementations
             return surveyDto;
         }
 
-        public async Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto)
+        public async Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto, string? userId)
         {
             var response = new SurveyResponse
             {
                 SurveyId = takeSurveyDto.Id,
-                SubmittedAt = DateTime.Now
+                SubmittedAt = DateTime.Now,
+                UserId = userId
             };
 
             foreach (var question in takeSurveyDto.Questions)

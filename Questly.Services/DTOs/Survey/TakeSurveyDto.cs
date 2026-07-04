@@ -18,6 +18,8 @@ namespace Questly.Services.DTOs.Survey
 
         public bool IsAvailable { get; set; }
 
+        public bool AllowAnonymousResponses { get; set; } = true;
+
         public List<TakeSurveyQuestionDto> Questions { get; set; } = new();
     }
 }

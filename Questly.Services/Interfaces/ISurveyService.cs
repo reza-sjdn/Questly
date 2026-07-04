@@ -24,7 +24,7 @@ namespace Questly.Services.Interfaces
 
         Task<TakeSurveyDto?> GetTakeSurveyDtoAsync(int surveyId);
 
-        Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto);
+        Task SubmitSurveyAsync(TakeSurveyDto takeSurveyDto, string? userId);
 
         Task<SurveyResultsDto?> GetSurveyResultsAsync(int surveyId);
 
