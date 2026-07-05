@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -99,7 +100,13 @@ namespace Questly.UI.Controllers
         public async Task<IActionResult> Submit(TakeSurveyViewModel takeSurveyModel)
         {
             if (!ModelState.IsValid)
+            {
+                string allErrors = string.Join("; ", ModelState.Values
+    .SelectMany(v => v.Errors)
+    .Select(e => e.ErrorMessage));
                 return View("Take", takeSurveyModel);
+            }
+
 
             var takeSurveyDto = _mapper.Map<TakeSurveyDto>(takeSurveyModel);
 
@@ -150,6 +157,24 @@ namespace Questly.UI.Controllers
         {
             await _surveyService.SetExpirationAsync(id, closedAt);
             return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Public(Guid publicId)
+        {
+            var publicSurvey = await _surveyService.GetPublicSurveyAsync(publicId);
+            if (publicSurvey == null)
+                return NotFound();
+            if (!publicSurvey.IsAvailable)
+                return View("SurveyUnavailable");
+
+            if (!publicSurvey.AllowAnonymousResponses &&
+                !User.Identity!.IsAuthenticated)
+            {
+                return Challenge();
+            }
+            var publicSurveyModel = _mapper.Map<TakeSurveyViewModel>(publicSurvey);
+            return View("Take", publicSurveyModel);
         }
     }
 }

@@ -293,5 +293,12 @@ namespace Questly.Services.Implementations
             var updatedSurveyDto = _mapper.Map<UpdateSurveyDto>(surveyDto);
             await UpdateSurveyAsync(updatedSurveyDto);
         }
+
+        public async Task<TakeSurveyDto?> GetPublicSurveyAsync(Guid publicId)
+        {
+            var survey = await _context.Surveys.SingleOrDefaultAsync(s => s.PublicId == publicId);
+            if (survey == null) return null;
+            return await GetTakeSurveyDtoAsync(survey.Id);
+        }
     }
 }

@@ -57,6 +57,44 @@
         </div>
         
     </div>
+
+    @* PublicId Section *@
+    <div class="card my-2">
+        <div class="card-header">
+            Public Survey Link
+        </div>
+
+        <div class="card-body">
+
+            <div class="input-group">
+
+                <input id="publicLink"
+                       class="form-control"
+                       style="font-size: 12.5px; font-weight: 600; color: rgba(0, 0, 0, .8);"
+                       readonly
+                       value="@Url.Action("Public", "Survey", new { publicId = Model.PublicId }, Context.Request.Scheme)" />
+
+                <button id="copyLink"
+                        type="button"
+                        class="btn btn-outline-secondary">
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("copyLink").addEventListener("click", function () {
+
+            navigator.clipboard.writeText(
+                document.getElementById("publicLink").value);
+
+            alert("Link copied.");
+        });
+    </script>
+
     <ul class="list-group mb-4">
         <li class="list-group-item"><span class="fw-bold">Title: </span>@Model.Title</li>
         <li class="list-group-item"><span class="fw-bold">Id: </span>@Model.Id</li>

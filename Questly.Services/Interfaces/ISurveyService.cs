@@ -35,5 +35,7 @@ namespace Questly.Services.Interfaces
         Task UnpublishSurveyAsync(int surveyId);
 
         Task SetExpirationAsync(int surveyId, DateTime? closedAt);
+
+        Task<TakeSurveyDto?> GetPublicSurveyAsync(Guid publicId);
     }
 }
