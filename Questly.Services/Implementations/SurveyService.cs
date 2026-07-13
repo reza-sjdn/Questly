@@ -184,10 +184,11 @@ namespace Questly.Services.Implementations
                          q.Type == QuestionType.MultipleChoice ||
                          q.Type == QuestionType.Dropdown))
             {
-                var questionDto = new QuestionResultDto
+                var questionResultDto = new QuestionResultDto
                 {
                     QuestionId = question.Id,
-                    QuestionText = question.Text
+                    QuestionText = question.Text,
+                    Type = question.Type
                 };
 
                 foreach (var option in question.Options)
@@ -195,7 +196,7 @@ namespace Questly.Services.Implementations
                     var count = await _context.ResponseAnswerOptions
                         .CountAsync(rao => rao.QuestionOptionId == option.Id);
 
-                    questionDto.Options.Add(new OptionResultDto
+                    questionResultDto.Options.Add(new OptionResultDto
                     {
                         OptionId = option.Id,
                         OptionText = option.Text,
@@ -204,9 +205,9 @@ namespace Questly.Services.Implementations
                 }
 
                 // Calculate the Percentage
-                var totalVotes = questionDto.Options.Sum(o => o.Count);
+                var totalVotes = questionResultDto.Options.Sum(o => o.Count);
 
-                foreach (var option in questionDto.Options)
+                foreach (var option in questionResultDto.Options)
                 {
                     option.Percentage = totalVotes == 0
                         ? 0
@@ -214,7 +215,30 @@ namespace Questly.Services.Implementations
                 }
 
 
-                surveyResultDto.Questions.Add(questionDto);
+                surveyResultDto.Questions.Add(questionResultDto);
+            }
+
+            foreach (var question in survey.Questions.Where(q =>
+                         q.Type == QuestionType.Rating5 ||
+                         q.Type == QuestionType.Rating10))
+            {
+                var query = _context.ResponseAnswers.AsNoTracking()
+                    .Where(ra => ra.QuestionId == question.Id);
+
+                var ratingResponseCount = await query.CountAsync(r => (r.AnswerText != null));
+                var ratingAvg = (double)(await query.SumAsync(ra => Convert.ToInt32(ra.AnswerText))) /
+                                ratingResponseCount;
+
+                var questionResultDto = new QuestionResultDto
+                {
+                    QuestionId = question.Id,
+                    QuestionText = question.Text,
+                    Type = question.Type,
+                    RatingAverage = ratingAvg,
+                    ResponseCount = ratingResponseCount,
+                };
+
+                surveyResultDto.Questions.Add(questionResultDto);
             }
 
             return surveyResultDto;
@@ -234,7 +258,7 @@ namespace Questly.Services.Implementations
             {
                 Title = survey.Title + " (Copy)",
                 Description = survey.Description,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 UserId = userId
             };
 
