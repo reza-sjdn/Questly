@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<QuestlyDbContext>(c => c.UseSqlServer("Server=.;Database=QuestlyDb;Trusted_Connection=True;TrustServerCertificate=True;"));
+builder.Services.AddDbContext<QuestlyDbContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = false;
