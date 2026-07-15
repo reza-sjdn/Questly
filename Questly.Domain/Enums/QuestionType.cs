@@ -10,6 +10,8 @@ namespace Questly.Domain.Enums
         LongText = 2,
         SingleChoice = 3,
         MultipleChoice = 4,
-        Dropdown = 5
+        Dropdown = 5,
+        Rating5 = 6,
+        Rating10 = 7,
     }
 }

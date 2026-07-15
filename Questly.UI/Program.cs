@@ -32,6 +32,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<ISurveyTemplateService, SurveyTemplateService>();
+builder.Services.AddScoped<ISurveySessionService, SurveySessionService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 var app = builder.Build();

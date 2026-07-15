@@ -8,6 +8,7 @@ using Questly.Domain.Entities;
 using Questly.Services.DTOs.Survey;
 using Questly.Services.Interfaces;
 using Questly.UI.Models.Survey;
+using System.Collections;
 using System.Security.Claims;
 
 namespace Questly.UI.Controllers
@@ -89,6 +90,13 @@ namespace Questly.UI.Controllers
                 !User.Identity!.IsAuthenticated)
             {
                 return Challenge();
+            }
+
+            // Check whether the Survey is of Skip Logic type or not
+            bool hasSkipLogic = await _surveyService.HasSkipLogic(surveyDto.Id);
+            if (hasSkipLogic)
+            {
+                return RedirectToAction(nameof(SurveySessionController.Start), "SurveySession", new { surveyId = surveyDto.Id });
             }
 
             var surveyModel = _mapper.Map<TakeSurveyViewModel>(surveyDto);
@@ -173,6 +181,14 @@ namespace Questly.UI.Controllers
             {
                 return Challenge();
             }
+
+            // Check whether the Survey is of Skip Logic type or not
+            bool hasSkipLogic = await _surveyService.HasSkipLogic(publicSurvey.Id);
+            if (hasSkipLogic)
+            {
+                return RedirectToAction(nameof(SurveySessionController.Start), "SurveySession", new { surveyId = publicSurvey.Id });
+            }
+
             var publicSurveyModel = _mapper.Map<TakeSurveyViewModel>(publicSurvey);
             return View("Take", publicSurveyModel);
         }

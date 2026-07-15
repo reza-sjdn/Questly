@@ -37,5 +37,7 @@ namespace Questly.Services.Interfaces
         Task SetExpirationAsync(int surveyId, DateTime? closedAt);
 
         Task<TakeSurveyDto?> GetPublicSurveyAsync(Guid publicId);
+
+        Task<bool> HasSkipLogic(int surveyId);
     }
 }

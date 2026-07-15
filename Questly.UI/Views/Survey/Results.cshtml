@@ -21,27 +21,46 @@
                 <strong>@question.QuestionText</strong>
             </div>
 
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Option</th>
-                            <th>Votes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var option in question.Options)
-                        {
+        @switch (question.Type) 
+        {
+            case QuestionType.SingleChoice:
+            case QuestionType.MultipleChoice:
+            case QuestionType.Dropdown:
+            <text>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td>@option.OptionText</td>
-                                <td>@option.Count</td>
+                                <th>Option</th>
+                                <th>Votes</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var option in question.Options)
+                            {
+                                <tr>
+                                    <td>@option.OptionText</td>
+                                    <td>@option.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
 
-                <canvas id="chart-@question.QuestionId" height="120"></canvas>
-            </div>
+                    <canvas id="chart-@question.QuestionId" height="120"></canvas>
+                </div>
+            </text>
+            break;
+
+            case QuestionType.Rating5:
+            case QuestionType.Rating10: 
+            <text>
+                <div class="card-body">
+                    <div><span class="fw-bold">Average: </span> @question.RatingAverage / @(question.Type == QuestionType.Rating5 ? "5" : "10")</div>
+                    <div><span class="fw-bold">Response: </span>@question.ResponseCount</div>
+                </div>
+            </text>
+            break;
+        }
         </div>
     }
 

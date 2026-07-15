@@ -6,6 +6,7 @@ using Questly.Services.DTOs.Survey;
 using Questly.UI.Models;
 using Questly.UI.Models.Question;
 using Questly.UI.Models.Survey;
+using System.Text.Json;
 
 namespace Questly.UI.AutoMapper
 {
@@ -18,25 +19,13 @@ namespace Questly.UI.AutoMapper
             CreateMap<SurveyTemplateQuestion, Question>();
             CreateMap<SurveyTemplateOption, QuestionOption>();
 
-            // Entity <-> DTO
+            // Entity -> DTO
             CreateMap<Survey, TakeSurveyDto>().ReverseMap();
             CreateMap<Question, TakeSurveyQuestionDto>().ReverseMap();
             CreateMap<QuestionOption, TakeSurveyOptionDto>().ReverseMap();
 
             CreateMap<Question, GetQuestionDto>().ReverseMap();
             CreateMap<QuestionOption, GetQuestionOptionDto>().ReverseMap();
-
-            CreateMap<CreateQuestionDto, Question>()
-                .ForMember(dest => dest.Options,
-                    opt => opt.MapFrom(src => src.Options.Where(o => !string.IsNullOrWhiteSpace(o))
-                        .Select((o, index) => new QuestionOption
-                        { Text = o, DisplayOrder = index + 1 }).ToList()));
-
-            CreateMap<UpdateQuestionDto, Question>()
-                .ForMember(dest => dest.Options,
-                    opt => opt.MapFrom(src => src.Options.Where(o => !string.IsNullOrWhiteSpace(o))
-                        .Select((o, index) => new QuestionOption
-                        { Text = o, DisplayOrder = index + 1 }).ToList()));
 
             CreateMap<Survey, GetSurveyDto>().ReverseMap();
             CreateMap<Question, GetQuestionDto>().ReverseMap();
@@ -51,6 +40,28 @@ namespace Questly.UI.AutoMapper
             CreateMap<QuestionOption, UpdateQuestionOptionDto>().ReverseMap();
 
             CreateMap<SurveyTemplate, SurveyTemplateDto>().ReverseMap();
+
+            CreateMap<Question, TakeQuestionDto>()
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.Text));
+
+            // DTO -> Entity
+            CreateMap<CreateQuestionDto, Question>()
+                .ForMember(dest => dest.Options,
+                    opt => opt.MapFrom(src => src.Options.Where(o => !string.IsNullOrWhiteSpace(o))
+                        .Select((o, index) => new QuestionOption
+                        { Text = o, DisplayOrder = index + 1 }).ToList()));
+
+            CreateMap<UpdateQuestionDto, Question>()
+                .ForMember(dest => dest.Options,
+                    opt => opt.MapFrom(src => src.Options.Where(o => !string.IsNullOrWhiteSpace(o))
+                        .Select((o, index) => new QuestionOption
+                        { Text = o, DisplayOrder = index + 1 }).ToList()));
+
+            CreateMap<TakeQuestionDto, SurveySessionAnswer>()
+                .ForMember(dest => dest.SelectedOptionIdsJson,
+                           opt => opt.MapFrom(src => JsonSerializer.Serialize(src.SelectedOptionIds)));
+
 
             // DTO <-> ViewModel
             CreateMap<TakeSurveyDto, TakeSurveyViewModel>().ReverseMap();
@@ -80,6 +91,8 @@ namespace Questly.UI.AutoMapper
             CreateMap<SkipLogicDto, SkipLogicViewModel>().ReverseMap();
             CreateMap<SkipLogicOptionDto, SkipLogicOptionViewModel>().ReverseMap();
             CreateMap<QuestionLookupDto, QuestionLookupViewModel>().ReverseMap();
+
+            CreateMap<TakeQuestionDto, TakeQuestionViewModel>().ReverseMap();
 
             // DTO <-> DTO
             CreateMap<GetSurveyDto, UpdateSurveyDto>().ReverseMap();
