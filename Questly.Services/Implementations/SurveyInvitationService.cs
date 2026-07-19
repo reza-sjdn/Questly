@@ -9,7 +9,9 @@ using System.Text;
 
 namespace Questly.Services.Implementations
 {
-    public class SurveyInvitationService(QuestlyDbContext _context) : ISurveyInvitationService
+    public class SurveyInvitationService(QuestlyDbContext _context,
+                                         IEmailSender _emailSender,
+                                         ISurveyService _surveyService) : ISurveyInvitationService
     {
         public async Task<SendInvitationDto?> GetInvitationAsync(int surveyId)
         {
@@ -40,8 +42,13 @@ namespace Questly.Services.Implementations
                     Email = email
                 });
 
-                // TODO:
-                // Send email here using IEmailSender
+                var publicLink = await _surveyService.GetPublicIdOfSurveyAsync(dto.SurveyId);
+                if (publicLink == null) return;
+
+                await _emailSender.SendAsync(
+                    email,
+                    "You're invited to a survey",
+                    $"Please complete the survey:\nhttp://localhost:5194/Survey/Public?publicId={publicLink}");
             }
 
             await _context.SaveChangesAsync();

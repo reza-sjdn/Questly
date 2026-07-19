@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Questly.Data.Context;
 using Questly.Data.Entities;
+using Questly.Services.Configurations;
 using Questly.Services.Implementations;
 using Questly.Services.Interfaces;
 using Questly.UI;
@@ -35,6 +36,11 @@ builder.Services.AddScoped<ISurveyTemplateService, SurveyTemplateService>();
 builder.Services.AddScoped<ISurveySessionService, SurveySessionService>();
 builder.Services.AddScoped<ISurveyInvitationService, SurveyInvitationService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 

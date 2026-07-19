@@ -38,6 +38,8 @@ namespace Questly.Services.Interfaces
 
         Task<TakeSurveyDto?> GetPublicSurveyAsync(Guid publicId);
 
+        Task<Guid?> GetPublicIdOfSurveyAsync(int surveyId);
+
         Task<bool> HasSkipLogic(int surveyId);
     }
 }

@@ -410,6 +410,9 @@ namespace Questly.Services.Implementations
             return await GetTakeSurveyDtoAsync(survey.Id);
         }
 
+        public async Task<Guid?> GetPublicIdOfSurveyAsync(int surveyId) =>
+            (await GetSurveyByIdAsync(surveyId))?.PublicId;
+
         public async Task<bool> HasSkipLogic(int surveyId)
         {
             return _context.Questions
